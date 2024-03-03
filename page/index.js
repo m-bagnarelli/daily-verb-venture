@@ -27,7 +27,9 @@ const init = () => {
 	} else {
 		const verbs = PHRASAL_VERBS['phrasal_verbs']
 		const dailyVerb = getRandomVerb(verbs);
-		setDailyVerbInStorage(dailyVerb);
+		const backgroundImageId = getRandomInt(1, 6);
+		const dailyVerbToStorage = { ...dailyVerb, backgroundImageId };
+		setDailyVerbInStorage(dailyVerbToStorage);
 		setBackgroundImage();
 		displayVerb(dailyVerb);
 	}
@@ -64,7 +66,7 @@ speakButton.addEventListener('click', () => {
 		const voiceMessage = new SpeechSynthesisUtterance(example);
 		window.speechSynthesis.speak(voiceMessage);
 	} else {
-		alert('Your browser does not support Web Speech API.');
+		showNotification('Your browser does not support Web Speech API.');
 	}
 });
 
@@ -122,8 +124,7 @@ const getDailyVerbInStorage = () => {
 
 const setDailyVerbInStorage = (verb) => {
 	const timestamp = new Date();
-	const backgroundImageId = getRandomInt(1, 6);
-	const verbToStore = {  ...verb, timestamp, backgroundImageId };
+	const verbToStore = {  ...verb, timestamp };
 	localStorage.setItem('dailyVerb', JSON.stringify(verbToStore));
 }
 
