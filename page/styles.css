@@ -6,7 +6,6 @@ body {
 	font-family: 'Merriweather', serif;
 	width: 100vw;
 	height: 100vh;
-	background-image: url('../images/background-1.png');
 	background-size: cover;
 	color: #000;
 	margin: 0;
@@ -103,7 +102,7 @@ body {
 	'wght' 400,
   'GRAD' 0,
   'opsz' 24;
-	color: #6A28C7;
+	color: black;
 }
 
 .action-label {
@@ -116,7 +115,7 @@ body {
 	justify-content: flex-start;
 	align-items: center;
 	position: absolute;
-	bottom: 3rem;
+	bottom: 5rem;
 	width: 400px;
 	left: calc(50% - 200px);
 	border: 1px solid black;
@@ -150,8 +149,12 @@ body {
 	animation-fill-mode: both;
 }
 
-
 .notification {
 	font-size: 1rem;
 	margin-left: 1rem;
+}
+
+.footer {
+	align-self: center;
+	margin-top: auto;
 }

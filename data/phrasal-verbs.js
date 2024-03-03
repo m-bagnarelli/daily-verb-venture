@@ -1,4 +1,4 @@
-{
+const PHRASAL_VERBS = {
   "phrasal_verbs": [
     {
       "id": 1,
@@ -348,3 +348,5 @@
     }
   ]
 }
+
+export default PHRASAL_VERBS;

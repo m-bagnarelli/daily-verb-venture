@@ -1,3 +1,4 @@
+import PHRASAL_VERBS from '../data/phrasal-verbs.js';
 import getRandomInt from '../utils/get-random-int.js';
 import capitalizeStr from '../utils/capitalize-str.js';
 import isSameDay from '../utils/is-same-day.js';
@@ -12,20 +13,22 @@ const notificationContainerElement = document.getElementById('notification-conta
 const notificationElement = document.getElementById('notification');
 
 // Init Function 
-const init = async () => {
+const init = () => {
 	const dailyVerbInStorage = getDailyVerbInStorage();
 	const dailyVerbExpired = verbInStorageHasExpired(dailyVerbInStorage);
 
 	if (dailyVerbInStorage && !dailyVerbExpired) {
+		setBackgroundImage();
 		displayVerb(dailyVerbInStorage);
 		const isFavorite = isDailyVerbFavorite(dailyVerbInStorage);
 		if (isFavorite) {
 			favoriteIconElement.classList.add('filled');
 		}
 	} else {
-		const verbs = await fetchVerbs();
+		const verbs = PHRASAL_VERBS['phrasal_verbs']
 		const dailyVerb = getRandomVerb(verbs);
 		setDailyVerbInStorage(dailyVerb);
+		setBackgroundImage();
 		displayVerb(dailyVerb);
 	}
 }
@@ -105,7 +108,7 @@ const showNotification = (text) => {
 	setTimeout(() => {
 		notificationContainerElement.classList.remove('fadeIn');
 		notificationContainerElement.classList.add('fadeOut');
-	}, 1500);
+	}, 1800);
 }
 
 const isDailyVerbFavorite = (verb) => {
@@ -119,7 +122,8 @@ const getDailyVerbInStorage = () => {
 
 const setDailyVerbInStorage = (verb) => {
 	const timestamp = new Date();
-	const verbToStore = {  ...verb, timestamp };
+	const backgroundImageId = getRandomInt(1, 6);
+	const verbToStore = {  ...verb, timestamp, backgroundImageId };
 	localStorage.setItem('dailyVerb', JSON.stringify(verbToStore));
 }
 
@@ -128,12 +132,6 @@ const verbInStorageHasExpired = (verb) => {
 	const currentDate = new Date();
 	const timestampDate = new Date(verb.timestamp);
 	return !isSameDay(timestampDate, currentDate);
-}
-
-const fetchVerbs = async () => {
-	const response = await fetch('../data/phrasal-verbs.json');
-	const data = await response.json();
-	return data['phrasal_verbs'];
 }
 
 const getRandomVerb = (verbs) => {
@@ -148,6 +146,11 @@ const displayVerb = ({ verb, meaning_en, pronunciation, example }) => {
 	document.getElementById('pronunciation').innerHTML = `(/${pronunciation}/)`;
 	document.getElementById('meaning_en').innerHTML = meaning_en;
 	document.getElementById('example').innerHTML += example;
+}
+
+const setBackgroundImage = () => {
+	const { backgroundImageId } = getDailyVerbInStorage();
+	document.body.style.backgroundImage = `url('../images/background-${backgroundImageId}.png')`;
 }
 
 init();
