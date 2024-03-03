@@ -6,7 +6,7 @@ body {
 	font-family: 'Merriweather', serif;
 	width: 100vw;
 	height: 100vh;
-	background-image: url('../images/background.png');
+	background-image: url('../images/background-1.png');
 	background-size: cover;
 	color: #000;
 	margin: 0;
@@ -113,13 +113,45 @@ body {
 
 .notification-container {
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
+	align-items: center;
 	position: absolute;
-	width: 100%;
 	bottom: 3rem;
-	right: 0;
+	width: 400px;
+	left: calc(50% - 200px);
+	border: 1px solid black;
+	border-radius: 10px;
+	padding: 1rem 1.5rem;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+	opacity: 0;
 }
+
+@keyframes fadeIn {
+	from { opacity: 0 }
+	to { opacity: 1 }
+}
+
+@keyframes fadeOut {
+	from { opacity: 1 }
+	to { opacity: 0 }
+}
+
+.fadeIn {
+	opacity: 1;
+	animation-name: fadeIn;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+.fadeOut {
+	opacity: 0;
+	animation-name: fadeOut;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
 
 .notification {
 	font-size: 1rem;
+	margin-left: 1rem;
 }

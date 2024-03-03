@@ -2,48 +2,58 @@ import getRandomInt from '../utils/get-random-int.js';
 import capitalizeStr from '../utils/capitalize-str.js';
 import isSameDay from '../utils/is-same-day.js';
 
-const actionButtons = document.querySelectorAll('.action-btn');
-
 const speakButton = document.getElementById('speakButton');
 const favoriteButton = document.getElementById('favoriteButton');
 const contentCopyButton = document.getElementById('contentCopyButton');
 
 const actionLabelElement = document.getElementById('action-label');
+const favoriteIconElement = document.getElementById('favoriteIcon');
+const notificationContainerElement = document.getElementById('notification-container');
 const notificationElement = document.getElementById('notification');
 
-actionButtons.forEach(button => {
-	button.addEventListener('click', () => {
-		if (button.id === 'speakButton') {
-			return ;
-		} else if (button.id === 'favoriteButton') {
-			handleFavorites();
-		} else {
-			// contentCopyButton
-			const { verb } = getDailyVerbInStorage();
-			navigator.clipboard.writeText(verb);
-			notificationElement.innerHTML = 'Phrasal verb copied to Clipboard ✨';
-		}
-
-		setTimeout(() => {
-			notificationElement.innerHTML = '';
-		}, 1000);
-	});
-});
-
-const handleFavorites = () => {
+// Init Function 
+const init = async () => {
 	const dailyVerbInStorage = getDailyVerbInStorage();
-	if (dailyVerbInStorage.hasOwnProperty('favorite') && dailyVerbInStorage.favorite) {
-		dailyVerbInStorage.favorite = false;
-		setDailyVerbInStorage(dailyVerbInStorage);
-		document.getElementById('favoriteIcon').classList.remove('filled');
-		notificationElement.innerHTML = 'Phrasal verb removed from Favorites ✨';
+	const dailyVerbExpired = verbInStorageHasExpired(dailyVerbInStorage);
+
+	if (dailyVerbInStorage && !dailyVerbExpired) {
+		displayVerb(dailyVerbInStorage);
+		const isFavorite = isDailyVerbFavorite(dailyVerbInStorage);
+		if (isFavorite) {
+			favoriteIconElement.classList.add('filled');
+		}
 	} else {
-		dailyVerbInStorage.favorite = true;
-		setDailyVerbInStorage(dailyVerbInStorage);
-		document.getElementById('favoriteIcon').classList.add('filled');
-		notificationElement.innerHTML = 'Phrasal verb added to Favorites ✨';
+		const verbs = await fetchVerbs();
+		const dailyVerb = getRandomVerb(verbs);
+		setDailyVerbInStorage(dailyVerb);
+		displayVerb(dailyVerb);
 	}
 }
+
+// Favorite Button Click Listener
+favoriteButton.addEventListener('click', () => {
+	const dailyVerbInStorage = getDailyVerbInStorage();
+	const isFavorite = isDailyVerbFavorite(dailyVerbInStorage);
+
+	if (isFavorite) {
+		dailyVerbInStorage.favorite = false;
+		favoriteIconElement.classList.remove('filled');
+		showNotification('Phrasal verb removed from favorites!');
+	} else {
+		dailyVerbInStorage.favorite = true;
+		favoriteIconElement.classList.add('filled');
+		showNotification('Phrasal verb added to favorites!');
+	}
+	// Update favorite property in storage.
+	setDailyVerbInStorage(dailyVerbInStorage);
+});
+
+// CopyToClipboard Button Click Listener
+contentCopyButton.addEventListener('click', () => {
+	const { verb } = getDailyVerbInStorage();
+	navigator.clipboard.writeText(verb);
+	showNotification('Phrasal verb copied to Clipboard!');
+});
 
 speakButton.addEventListener('click', () => {
 	if ('speechSynthesis' in window) {
@@ -55,6 +65,7 @@ speakButton.addEventListener('click', () => {
 	}
 });
 
+// Action Buttons Hover Listeners: 
 speakButton.addEventListener('mouseenter', () => {
 	actionLabelElement.innerHTML = 'Listen up!';
 });
@@ -64,7 +75,13 @@ speakButton.addEventListener('mouseleave', () => {
 });
 
 favoriteButton.addEventListener('mouseenter', () => {
-	actionLabelElement.innerHTML = 'Add to Favorites';
+	const dailyVerb = getDailyVerbInStorage();
+	const isFavorite = isDailyVerbFavorite(dailyVerb);
+	if (isFavorite) {
+		actionLabelElement.innerHTML = 'Remove from Favorites';
+	} else {
+		actionLabelElement.innerHTML = 'Add to Favorites';
+	}
 });
 
 favoriteButton.addEventListener('mouseleave', () => {
@@ -79,17 +96,20 @@ contentCopyButton.addEventListener('mouseleave', () => {
 	actionLabelElement.innerHTML = '';
 });
 
-const init = async () => {
-	const dailyVerbInStorage = getDailyVerbInStorage();
-	const hasDailyVerbExpired = verbInStorageHasExpired(dailyVerbInStorage);
-	if (dailyVerbInStorage && !hasDailyVerbExpired) {
-		displayVerb(dailyVerbInStorage);
-	} else {
-		const verbs = await fetchVerbs();
-		const dailyVerb = getRandomVerb(verbs);
-		setDailyVerbInStorage(dailyVerb);
-		displayVerb(dailyVerb);
-	}
+// Show Notification
+const showNotification = (text) => {
+	notificationElement.innerHTML = text;
+	notificationContainerElement.classList.remove('fadeOut');
+	notificationContainerElement.classList.add('fadeIn');
+
+	setTimeout(() => {
+		notificationContainerElement.classList.remove('fadeIn');
+		notificationContainerElement.classList.add('fadeOut');
+	}, 1500);
+}
+
+const isDailyVerbFavorite = (verb) => {
+	return verb?.hasOwnProperty('favorite') && verb?.favorite;
 }
 
 const getDailyVerbInStorage = () => {
