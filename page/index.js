@@ -204,6 +204,7 @@ const displayFavoriteList = (favorites) => {
 
 			const textSpan = document.createElement('span');
 			textSpan.classList.add('favorite-item-text');
+			textSpan.id = `favorite-text-${id}`;
 			textSpan.textContent = verb;
 
 			const actionDiv = document.createElement('div');
@@ -221,6 +222,7 @@ const displayFavoriteList = (favorites) => {
 
 			favoriteListElement.appendChild(listItem);
 			listenToDeleteFavoriteButton(id);
+			listenToFavoriteVerbText(id);
 	});
 };
 
@@ -241,5 +243,16 @@ const listenToDeleteFavoriteButton = (verbId) => {
 		}
 	});
 };
+
+const listenToFavoriteVerbText = (verbId) => {
+	const favoriteVerbElement = document.getElementById(`favorite-text-${verbId}`);
+	const dailyVerb = getDailyVerbInStorage();
+	favoriteVerbElement.addEventListener('click', () => {
+		if (verbId === dailyVerb.id) return ;
+		const favorites = getFavorites();
+		const verbToDisplay = favorites.find(favorite => favorite.id === verbId);
+		displayVerb(verbToDisplay);
+	});
+}
 
 init();
