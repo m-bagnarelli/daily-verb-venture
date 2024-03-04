@@ -3,6 +3,8 @@ import getRandomInt from '../utils/get-random-int.js';
 import capitalizeStr from '../utils/capitalize-str.js';
 import isSameDay from '../utils/is-same-day.js';
 
+let currentVerbDisplayed = undefined;
+
 const speakButton = document.getElementById('speakButton');
 const favoriteButton = document.getElementById('favoriteButton');
 const contentCopyButton = document.getElementById('contentCopyButton');
@@ -41,15 +43,14 @@ const init = () => {
 
 // Favorite Button Click Listener
 favoriteButton.addEventListener('click', () => {
-	const dailyVerbInStorage = getDailyVerbInStorage();
-	const isFavorite = isDailyVerbFavorite(dailyVerbInStorage);
+	const isFavorite = isDailyVerbFavorite(currentVerbDisplayed);
 
 	if (isFavorite) {
-		removeVerbFromFavorites(dailyVerbInStorage.id);
+		removeVerbFromFavorites(currentVerbDisplayed.id);
 		favoriteIconElement.classList.remove('filled');
 		showNotification('Phrasal verb removed from favorites!');
 	} else {
-		addVerbToFavorites(dailyVerbInStorage);
+		addVerbToFavorites(currentVerbDisplayed);
 		favoriteIconElement.classList.add('filled');
 		showNotification('Phrasal verb added to favorites!');
 	}
@@ -60,14 +61,14 @@ favoriteButton.addEventListener('click', () => {
 
 // CopyToClipboard Button Click Listener
 contentCopyButton.addEventListener('click', () => {
-	const { verb } = getDailyVerbInStorage();
+	const { verb } = currentVerbDisplayed;
 	navigator.clipboard.writeText(verb);
 	showNotification('Phrasal verb copied to Clipboard!');
 });
 
 speakButton.addEventListener('click', () => {
 	if ('speechSynthesis' in window) {
-		const { example } = getDailyVerbInStorage();
+		const { example } = currentVerbDisplayed;
 		const voiceMessage = new SpeechSynthesisUtterance(example);
 		window.speechSynthesis.speak(voiceMessage);
 	} else {
@@ -77,7 +78,7 @@ speakButton.addEventListener('click', () => {
 
 // Action Buttons Hover Listeners: 
 speakButton.addEventListener('mouseenter', () => {
-	actionLabelElement.innerHTML = 'Listen up!';
+	actionLabelElement.innerHTML = 'Listen up';
 });
 
 speakButton.addEventListener('mouseleave', () => {
@@ -159,12 +160,14 @@ const getRandomVerb = (verbs) => {
 	return verbs[randomIndex];
 }
 
-const displayVerb = ({ verb, meaning_en, pronunciation, example }) => {
-	const capitalizedVerb = capitalizeStr(verb);
+const displayVerb = (verb) => {
+	const { verb: text, pronunciation, meaning_en, example } = verb;
+	const capitalizedVerb = capitalizeStr(text);
 	document.getElementById('verb').innerHTML = `${capitalizedVerb}`;
 	document.getElementById('pronunciation').innerHTML = `(/${pronunciation}/)`;
 	document.getElementById('meaning_en').innerHTML = meaning_en;
-	document.getElementById('example').innerHTML += example;
+	document.getElementById('example').innerHTML = example;
+	currentVerbDisplayed = verb;
 }
 
 const setBackgroundImage = () => {
@@ -246,9 +249,7 @@ const listenToDeleteFavoriteButton = (verbId) => {
 
 const listenToFavoriteVerbText = (verbId) => {
 	const favoriteVerbElement = document.getElementById(`favorite-text-${verbId}`);
-	const dailyVerb = getDailyVerbInStorage();
 	favoriteVerbElement.addEventListener('click', () => {
-		if (verbId === dailyVerb.id) return ;
 		const favorites = getFavorites();
 		const verbToDisplay = favorites.find(favorite => favorite.id === verbId);
 		displayVerb(verbToDisplay);
