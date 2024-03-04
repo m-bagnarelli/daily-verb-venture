@@ -12,6 +12,10 @@ const favoriteIconElement = document.getElementById('favoriteIcon');
 const notificationContainerElement = document.getElementById('notification-container');
 const notificationElement = document.getElementById('notification');
 
+const favoriteListElement = document.getElementById('favorites-list');
+const showFavoritesElement = document.getElementById('show-favorites');
+const hideFavoritesElement = document.getElementById('hide-favorites');
+
 // Init Function 
 const init = () => {
 	const dailyVerbInStorage = getDailyVerbInStorage();
@@ -25,7 +29,7 @@ const init = () => {
 			favoriteIconElement.classList.add('filled');
 		}
 	} else {
-		const verbs = PHRASAL_VERBS['phrasal_verbs']
+		const verbs = PHRASAL_VERBS['phrasal_verbs'];
 		const dailyVerb = getRandomVerb(verbs);
 		const backgroundImageId = getRandomInt(1, 6);
 		const dailyVerbToStorage = { ...dailyVerb, backgroundImageId };
@@ -41,16 +45,17 @@ favoriteButton.addEventListener('click', () => {
 	const isFavorite = isDailyVerbFavorite(dailyVerbInStorage);
 
 	if (isFavorite) {
-		dailyVerbInStorage.favorite = false;
+		removeVerbFromFavorites(dailyVerbInStorage.id);
 		favoriteIconElement.classList.remove('filled');
 		showNotification('Phrasal verb removed from favorites!');
 	} else {
-		dailyVerbInStorage.favorite = true;
+		addVerbToFavorites(dailyVerbInStorage);
 		favoriteIconElement.classList.add('filled');
 		showNotification('Phrasal verb added to favorites!');
 	}
-	// Update favorite property in storage.
-	setDailyVerbInStorage(dailyVerbInStorage);
+	// Update favorite List.
+	const favorites = getFavorites();
+	displayFavoriteList(favorites);
 });
 
 // CopyToClipboard Button Click Listener
@@ -113,8 +118,21 @@ const showNotification = (text) => {
 	}, 1800);
 }
 
+const addVerbToFavorites = (verb) => {
+	const favorites = getFavorites();
+	favorites.push(verb);
+	localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+const removeVerbFromFavorites = (verbId) => {
+	let favorites = getFavorites();
+	favorites = favorites.filter(favorite => favorite.id !== verbId);
+	localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
 const isDailyVerbFavorite = (verb) => {
-	return verb?.hasOwnProperty('favorite') && verb?.favorite;
+	const favorites = JSON.parse(localStorage.getItem('favorites'));
+	return favorites?.find(favorite => favorite.id === verb.id);
 }
 
 const getDailyVerbInStorage = () => {
@@ -153,5 +171,75 @@ const setBackgroundImage = () => {
 	const { backgroundImageId } = getDailyVerbInStorage();
 	document.body.style.backgroundImage = `url('../images/background-${backgroundImageId}.png')`;
 }
+
+const getFavorites = () => {
+	return JSON.parse(localStorage.getItem('favorites')) || [];
+}
+
+// Show Favorites Listener
+showFavoritesElement.addEventListener('click', () => {
+	const favorites = getFavorites();
+	if (favorites?.length === 0) {
+		showNotification('You have no favorite verbs saved!')
+	} else {
+		showFavoritesElement.hidden = true;
+		hideFavoritesElement.hidden = false;
+		displayFavoriteList(favorites);
+		favoriteListElement.style.opacity = 1;
+	}
+});
+
+// Hide Favorites Listener
+hideFavoritesElement.addEventListener('click', () => {
+	showFavoritesElement.hidden = false;
+	hideFavoritesElement.hidden = true;
+	favoriteListElement.style.opacity = 0;
+});
+
+const displayFavoriteList = (favorites) => {
+
+	favoriteListElement.innerHTML = '';
+	favorites.forEach(({ verb, id }) => {
+			const listItem = document.createElement('li');
+
+			const textSpan = document.createElement('span');
+			textSpan.classList.add('favorite-item-text');
+			textSpan.textContent = verb;
+
+			const actionDiv = document.createElement('div');
+			actionDiv.classList.add('footer-actions');
+
+			const deleteSpan = document.createElement('span');
+			deleteSpan.classList.add('material-symbols-outlined', 'delete-favorite');
+			deleteSpan.id = `delete-favorite-icon-${id}`;
+			deleteSpan.textContent = 'delete';
+
+			actionDiv.appendChild(deleteSpan);
+
+			listItem.appendChild(textSpan);
+			listItem.appendChild(actionDiv);
+
+			favoriteListElement.appendChild(listItem);
+			listenToDeleteFavoriteButton(id);
+	});
+};
+
+const listenToDeleteFavoriteButton = (verbId) => {
+	const deleteIconButtonElement = document.getElementById(`delete-favorite-icon-${verbId}`);
+	deleteIconButtonElement.addEventListener('click', () => {
+		removeVerbFromFavorites(verbId);
+		const dailyVerb = getDailyVerbInStorage();
+		if (verbId === dailyVerb.id) {
+			favoriteIconElement.classList.remove('filled');
+		}
+		const favorites = getFavorites();
+		displayFavoriteList(favorites);
+		if (favorites.length === 0) {
+			showFavoritesElement.hidden = false;
+			hideFavoritesElement.hidden = true;
+			favoriteListElement.style.opacity = 0;
+		}
+	});
+};
 
 init();
