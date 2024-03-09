@@ -70,6 +70,7 @@ speakButton.addEventListener('click', () => {
 	if ('speechSynthesis' in window) {
 		const { example } = currentVerbDisplayed;
 		const voiceMessage = new SpeechSynthesisUtterance(example);
+		voiceMessage.lang = 'en-US';
 		window.speechSynthesis.speak(voiceMessage);
 	} else {
 		showNotification('Your browser does not support Web Speech API.');
