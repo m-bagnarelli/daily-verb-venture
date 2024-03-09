@@ -93,23 +93,6 @@ body {
 	cursor: pointer;
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
-}
-
-.filled {
-  font-variation-settings:
-  'FILL' 1,
-	'wght' 400,
-  'GRAD' 0,
-  'opsz' 24;
-	color: black;
-}
-
 .action-label {
 	font-size: 1rem;
 	margin-top: .5rem;

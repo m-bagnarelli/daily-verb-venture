@@ -3,7 +3,7 @@ import getRandomInt from '../utils/get-random-int.js';
 import capitalizeStr from '../utils/capitalize-str.js';
 import isSameDay from '../utils/is-same-day.js';
 
-let currentVerbDisplayed = undefined;
+let currentVerbDisplayed;
 
 const speakButton = document.getElementById('speakButton');
 const favoriteButton = document.getElementById('favoriteButton');
@@ -28,7 +28,7 @@ const init = () => {
 		displayVerb(dailyVerbInStorage);
 		const isFavorite = isDailyVerbFavorite(dailyVerbInStorage);
 		if (isFavorite) {
-			favoriteIconElement.classList.add('filled');
+			favoriteIconElement.innerHTML = 'favorite';
 		}
 	} else {
 		const verbs = PHRASAL_VERBS['phrasal_verbs'];
@@ -47,11 +47,11 @@ favoriteButton.addEventListener('click', () => {
 
 	if (isFavorite) {
 		removeVerbFromFavorites(currentVerbDisplayed.id);
-		favoriteIconElement.classList.remove('filled');
+		favoriteIconElement.innerHTML = 'favorite_border';
 		showNotification('Phrasal verb removed from favorites!');
 	} else {
 		addVerbToFavorites(currentVerbDisplayed);
-		favoriteIconElement.classList.add('filled');
+		favoriteIconElement.innerHTML = 'favorite';
 		showNotification('Phrasal verb added to favorites!');
 	}
 	// Update favorite List.
@@ -214,7 +214,7 @@ const displayFavoriteList = (favorites) => {
 			actionDiv.classList.add('footer-actions');
 
 			const deleteSpan = document.createElement('span');
-			deleteSpan.classList.add('material-symbols-outlined', 'delete-favorite');
+			deleteSpan.classList.add('material-icons-outlined', 'delete-favorite');
 			deleteSpan.id = `delete-favorite-icon-${id}`;
 			deleteSpan.textContent = 'delete';
 
@@ -235,7 +235,7 @@ const listenToDeleteFavoriteButton = (verbId) => {
 		removeVerbFromFavorites(verbId);
 		const dailyVerb = getDailyVerbInStorage();
 		if (verbId === dailyVerb.id) {
-			favoriteIconElement.classList.remove('filled');
+			favoriteIconElement.innerHTML = 'favorite_border';
 		}
 		const favorites = getFavorites();
 		displayFavoriteList(favorites);
