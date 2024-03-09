@@ -110,12 +110,10 @@ contentCopyButton.addEventListener('mouseleave', () => {
 // Show Notification
 const showNotification = (text) => {
 	notificationElement.innerHTML = text;
-	notificationContainerElement.classList.remove('fadeOut');
-	notificationContainerElement.classList.add('fadeIn');
+	notificationContainerElement.classList.add('show');
 
 	setTimeout(() => {
-		notificationContainerElement.classList.remove('fadeIn');
-		notificationContainerElement.classList.add('fadeOut');
+		notificationContainerElement.classList.remove('show');
 	}, 1800);
 }
 

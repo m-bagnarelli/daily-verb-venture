@@ -95,22 +95,22 @@ body {
 
 
 .action-btn:hover {
-	background-color: rgba(0, 0, 0, 0.1); /* Slight background color on hover */
-	border-color: rgba(0, 0, 0, 0.3); /* Darken the border a little */
+	background-color: rgba(0, 0, 0, 0.1);
+	border-color: rgba(0, 0, 0, 0.3);
 }
 
 .action-btn:active {
-	background-color: rgba(0, 0, 0, 0.2); /* Darker background on click */
-	border-color: rgba(0, 0, 0, 0.5); /* Even darker border to simulate a pressed effect */
-	box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3); /* Inner shadow to give depth */
+	background-color: rgba(0, 0, 0, 0.2);
+	border-color: rgba(0, 0, 0, 0.5);
+	box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .material-icons-outlined {
-	transition: transform 0.3s; /* Smooth transformation for the icon */
+	transition: transform 0.3s;
 }
 
 .action-btn:active .material-icons-outlined {
-	transform: scale(0.95); /* Slightly reduce the icon size when clicked */
+	transform: scale(0.95);
 }
 
 .action-label {
@@ -125,36 +125,21 @@ body {
 	position: absolute;
 	bottom: 2rem;
 	width: 400px;
-	left: calc(50% - 200px);
+	left: 50%;
+	transform: translateX(-50%);
 	border: 1px solid black;
 	border-radius: 10px;
 	padding: 1rem 1.5rem;
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.5s, visibility 0.5s ease-in-out;
 }
 
-@keyframes fadeIn {
-	from { opacity: 0 }
-	to { opacity: 1 }
-}
-
-@keyframes fadeOut {
-	from { opacity: 1 }
-	to { opacity: 0 }
-}
-
-.fadeIn {
+.notification-container.show {
 	opacity: 1;
-	animation-name: fadeIn;
-	animation-duration: .5s;
-	animation-fill-mode: both;
-}
-
-.fadeOut {
-	opacity: 0;
-	animation-name: fadeOut;
-	animation-duration: .5s;
-	animation-fill-mode: both;
+	visibility: visible;
+	transition: opacity 0.5s, visibility 0.5s ease-in-out;
 }
 
 .notification {
