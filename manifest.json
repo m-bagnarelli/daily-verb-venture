@@ -3,7 +3,7 @@
   "name": "Daily Verb Venture",
   "description": "Embark on the Daily Verb Venture and explore a new phrasal verb every day to expand your linguistic skills.",
   "author": "Mariano Bagnarelli",
-  "version": "1.0",
+  "version": "1.1.0",
   "chrome_url_overrides": {
     "newtab": "/page/index.html"
   },
