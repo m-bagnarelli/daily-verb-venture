@@ -114,7 +114,7 @@ const showNotification = (text) => {
 
 	setTimeout(() => {
 		notificationContainerElement.classList.remove('show');
-	}, 1800);
+	}, 1200);
 }
 
 const addVerbToFavorites = (verb) => {
